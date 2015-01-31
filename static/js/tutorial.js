@@ -16,11 +16,11 @@ var Comment = React.createClass({
 
 var CommentBox = React.createClass({
   loadCommentsFromServer: function () {
-    $.ajax({
+    return $.ajax({
       url: this.props.url,
       dataType: 'json',
       success: function (data) {
-        this.setState({data: data});
+        this.setState({data: data.comments});
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -28,17 +28,21 @@ var CommentBox = React.createClass({
     });
   },
   handleCommentSubmit: function (comment) {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: comment,
-      success: function (data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function (xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
+    var comments = this.state.data;
+    comments.push(comment);
+    this.setState({data: comments}, function () {
+      return $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        type: 'POST',
+        data: comment,
+        success: function (data) {
+          this.setState({data: data});
+        }.bind(this),
+        error: function (xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
     });
   },
   getInitialState: function () {
@@ -61,9 +65,9 @@ var CommentBox = React.createClass({
 
 var CommentList = React.createClass({
   render: function () {
-    var commentNodes = this.props.data.map(function (comment) {
+    var commentNodes = this.props.data.map(function (comment, index) {
       return (
-        <Comment author={comment.author}>
+        <Comment author={comment.author} key={index}>
           {comment.text}
         </Comment>
       );
@@ -101,6 +105,6 @@ var CommentForm = React.createClass({
 });
 
 React.render(
-  <CommentBox url="/comments" pollInterval={10000} />,
+  <CommentBox url="/comments" pollInterval={5000} />,
   document.getElementById('content')
 );
