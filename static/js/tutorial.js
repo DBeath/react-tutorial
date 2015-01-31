@@ -2,14 +2,62 @@ var converter = new Showdown.converter();
 
 var Comment = React.createClass({
   render: function () {
-    var rawMarkup = converter.makeHtml(this.props.children.toString());
+    var rawMarkup = converter.makeHtml(this.props.text.toString());
+    var formattedDate = new Date(this.props.posted)
     return (
       <div className="comment">
         <h2 className="commentAuthor">
           {this.props.author}
         </h2>
+        <span>{formattedDate.toUTCString()}</span>
         <span dangerouslySetInnerHTML={{__html: rawMarkup}} />
       </div>
+    );
+  }
+});
+
+var CommentList = React.createClass({
+  render: function () {
+    var commentNodes = [];
+    this.props.data.forEach(function (comment, index) {
+      commentNodes.push(
+        <Comment 
+          author={comment.author} 
+          text={comment.text} 
+          posted={comment.posted} 
+          key={index}>
+          {comment}
+        </Comment>
+      );
+    });
+    return (
+      <div className="commentList">
+        {commentNodes}
+      </div>
+    );
+  }
+});
+
+var CommentForm = React.createClass({
+  handleSubmit: function (e) {
+    e.preventDefault();
+    var author = this.refs.author.getDOMNode().value.trim();
+    var text = this.refs.text.getDOMNode().value.trim();
+    if (!text || !author ) {
+      return;
+    }
+    this.props.onCommentSubmit({author: author, text: text})
+    this.refs.author.getDOMNode().value = '';
+    this.refs.text.getDOMNode().value = '';
+    return;
+  },
+  render: function () {
+    return (
+      <form className="commentForm" onSubmit={this.handleSubmit}>
+        <input type="textarea" placeholder="Your name" ref="author" />
+        <input type="text" placeholder="Say something..." ref="text" />
+        <input type="submit" value="Post" />
+      </form>
     );
   }
 });
@@ -56,51 +104,9 @@ var CommentBox = React.createClass({
     return (
       <div className="commentBox">
         <h1>Comments</h1>
-        <CommentList data={this.state.data} />
         <CommentForm onCommentSubmit={this.handleCommentSubmit} />
+        <CommentList data={this.state.data} />
       </div>
-    );
-  }
-});
-
-var CommentList = React.createClass({
-  render: function () {
-    var commentNodes = [];
-    this.props.data.forEach(function (comment, index) {
-      commentNodes.push(
-        <Comment author={comment.author} key={index}>
-          {comment.text}
-        </Comment>
-      );
-    });
-    return (
-      <div className="commentList">
-        {commentNodes}
-      </div>
-    );
-  }
-});
-
-var CommentForm = React.createClass({
-  handleSubmit: function (e) {
-    e.preventDefault();
-    var author = this.refs.author.getDOMNode().value.trim();
-    var text = this.refs.text.getDOMNode().value.trim();
-    if (!text || !author ) {
-      return;
-    }
-    this.props.onCommentSubmit({author: author, text: text})
-    this.refs.author.getDOMNode().value = '';
-    this.refs.text.getDOMNode().value = '';
-    return;
-  },
-  render: function () {
-    return (
-      <form className="commentForm" onSubmit={this.handleSubmit}>
-        <input type="text" placeholder="Your name" ref="author" />
-        <input type="text" placeholder="Say something..." ref="text" />
-        <input type="submit" value="Post" />
-      </form>
     );
   }
 });
