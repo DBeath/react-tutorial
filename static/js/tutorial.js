@@ -65,8 +65,9 @@ var CommentBox = React.createClass({
 
 var CommentList = React.createClass({
   render: function () {
-    var commentNodes = this.props.data.map(function (comment, index) {
-      return (
+    var commentNodes = [];
+    this.props.data.forEach(function (comment, index) {
+      commentNodes.push(
         <Comment author={comment.author} key={index}>
           {comment.text}
         </Comment>
