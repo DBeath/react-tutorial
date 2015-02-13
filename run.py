@@ -20,7 +20,7 @@ class Comment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	author = db.Column(db.String(80))
 	text = db.Column(db.String(1024))
-	posted = db.Column(db.DateTime, default=datetime.utcnow())
+	posted = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def to_json(self):
 		return {

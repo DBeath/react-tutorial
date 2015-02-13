@@ -46,7 +46,7 @@ var CommentForm = React.createClass({
     if (!text || !author ) {
       return;
     }
-    this.props.onCommentSubmit({author: author, text: text})
+    this.props.onCommentSubmit({author: author, text: text, posted: new Date()})
     this.refs.author.getDOMNode().value = '';
     this.refs.text.getDOMNode().value = '';
     return;
