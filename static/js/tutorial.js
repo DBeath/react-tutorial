@@ -9,12 +9,21 @@ var Comment = React.createClass({
   render: function () {
     var formattedDate = new Date(this.props.posted)
     return (
-      <div className="comment">
-        <h2 className="commentAuthor">
-          {this.props.author}
-        </h2>
-        <span>{formattedDate.toUTCString()}</span>
-        <span dangerouslySetInnerHTML={this.rawMarkup()} />
+      <div className="comment item">
+        <div className="content">
+          <div className="commentAuthor header">
+            {this.props.author}
+          </div>
+          <div className="content">
+            <div className="meta">
+              <div className="date">
+                {formattedDate.toUTCString()}
+              </div>
+            </div>
+            <div className="description" dangerouslySetInnerHTML={this.rawMarkup()}>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -34,7 +43,7 @@ var CommentList = React.createClass({
       );
     });
     return (
-      <div className="commentList">
+      <div className="commentList ui relaxed divided items">
         {commentNodes}
       </div>
     );
@@ -83,7 +92,6 @@ var CommentBox = React.createClass({
   render: function () {
     return (
       <div className="commentBox">
-        <h1>Comments</h1>
         <CommentForm onCommentSubmit={this.handleCommentSubmit} />
         <CommentList data={this.state.data} />
       </div>
@@ -114,21 +122,29 @@ var CommentForm = React.createClass({
   },
   render: function () {
     return (
-      <form className="commentForm" onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          placeholder="Your name"
-          value={this.state.author}
-          onChange={this.handleAuthorChange}
-        />
-        <input
-          type="text"
-          placeholder="Say something..."
-          value={this.state.text}
-          onChange={this.handleTextChange}
-        />
-        <input type="submit" value="Post" />
+      <div className="ui segment">
+      <form className="commentForm ui form" onSubmit={this.handleSubmit}>
+        <div className="field">
+          <label>Your Name</label>
+          <input
+            type="text"
+            placeholder="Your name"
+            value={this.state.author}
+            onChange={this.handleAuthorChange}
+          />
+        </div>
+        <div className="field">
+          <label>Comment</label>
+          <textarea
+            type="textarea"
+            placeholder="Say something..."
+            value={this.state.text}
+            onChange={this.handleTextChange}
+          />
+        </div>
+        <button className="ui button blue" type="submit" value="Post">Submit</button>
       </form>
+      </div>
     );
   }
 });
